@@ -6,7 +6,7 @@ export default {
     },
     games:{
         index: '/games',
-        join: '/games',
-        create: '/games/join/:gameId',
+        join: '/games/join/:gameId',
+        create: '/games',
     },
 }

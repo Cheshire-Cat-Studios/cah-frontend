@@ -38,6 +38,8 @@ axios.defaults.headers.common['Authorization'] = bearer_token;
 			})
 		: (component = Register)
 
+	console.log(component)
+
 	createApp(component)
 		.use(VueSpinners)
 		// .use(router)

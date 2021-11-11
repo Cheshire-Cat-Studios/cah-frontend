@@ -5,7 +5,6 @@
         :disabled="disabled"
         :class="disabled && 'opacity-50'"
         class="
-            mb-8
             py-1
             px-3
             text-white

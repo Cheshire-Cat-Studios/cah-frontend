@@ -11,18 +11,18 @@
         </p>
 
         <input
-                v-model="name"
-                :class="false && 'animate__shakeX border-red-600'"
-                class="animate__animated outline-none text-center py-2 my-5 w-4/5 shadow-lg border"
-                type="text"
-                placeholder="Insert player name here..."
+            v-model="name"
+            :class="false && 'animate__shakeX border-red-600'"
+            class="animate__animated outline-none text-center py-2 my-5 w-4/5 shadow-lg border"
+            type="text"
+            placeholder="Insert player name here..."
         />
 
         <vue-button
-                @button-click="submit"
-                v-show="name.length > 2"
-                class="animate__animated animate__fadeIn"
-                text="Register user"
+            @button-click="submit"
+            v-show="name.length > 2"
+            class="animate__animated animate__fadeIn"
+            text="Register user"
         >
         </vue-button>
     </div>
@@ -50,14 +50,14 @@ export default {
 					name: this.name,
 				}
 			)
-            .then( response => {
-				localStorage.setItem('token',response.data.data.token)
+				.then(response => {
+					localStorage.setItem('token', response.data.data.token)
 
-                location.reload()
-            })
-            .catch(error => {
-				console.log(error.response.data.errors)
-			})
+					location.reload()
+				})
+				.catch(error => {
+					console.log(error.response.data.errors)
+				})
 		}
 	},
 }

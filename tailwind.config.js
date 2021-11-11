@@ -14,6 +14,9 @@ module.exports = {
 			fontSize: {
 				'2xs': '0.5rem',
 			},
+			width: {
+				'200': '50rem'
+			},
 		},
 		variants: {
 			extend: {
