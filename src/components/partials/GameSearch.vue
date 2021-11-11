@@ -52,6 +52,13 @@
                     </div>
                 </div>
                 <div
+                    v-show="!games.length"
+                    class="col-span-8 text-center p-4"
+                >
+                    No games match your search criteria, please try amending your search filters or create a game using the button above!
+                </div>
+
+                <div
                     :key="index"
                     v-for="(game,index) in games"
                     class="grid grid-cols-8"
@@ -96,7 +103,7 @@
 
             <error-messages
                 :show="false"
-                :messages="'aef'"
+                :messages="['afeaf']"
             />
 
             <vue-button

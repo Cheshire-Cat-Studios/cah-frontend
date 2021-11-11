@@ -1,7 +1,7 @@
 <template>
     <Transition name="fade">
         <div
-            v-if="showing"
+            v-show="showing"
             :class="showing && 'overflow-hidden'"
             class="fixed flex justify-center items-center w-screen h-screen bg-black bg-opacity-50 top-0 z-20"
             @click.self="close"

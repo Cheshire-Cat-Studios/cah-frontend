@@ -17,7 +17,7 @@
                 required: true,
             },
             messages: {
-				type: String,
+				type: Array,
 				required: true,
             }
         }

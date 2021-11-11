@@ -96,7 +96,8 @@
                 </span>
                 <div class="ml-auto col-span-2 w-full">
                     <vue-select
-                        class="w-full"
+                        class="w-full animate__animated"
+                        :class="!!errors?.game_time_limit_mins && 'animate__shakeX shake border border-red-600'"
                         @change="form_fields.game_time_limit_mins = parseInt($event.target?.value)"
                         :selected-option="form_fields.game_time_limit_mins"
                         :options="select_data.game_time_limit_mins"
@@ -119,15 +120,15 @@
                 Create game
             </button>
         </div>
-        <div
-            v-if="awaitingResponse"
-            class="absolute w-full h-full top-0"
-        >
-            <div class="absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2">
-                <fold :loading="awaitingResponse"></fold>
-                <span class="loading font-bold text-lg text-shadow-xl">Creating game</span>
-            </div>
-        </div>
+<!--        <div-->
+<!--            v-show="awaitingResponse"-->
+<!--            class="absolute w-full h-full top-0"-->
+<!--        >-->
+<!--            <div class="absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2">-->
+<!--                <square :loading="false"></square>-->
+<!--                <span class="loading font-bold text-lg text-shadow-xl">Creating game</span>-->
+<!--            </div>-->
+<!--        </div>-->
     </div>
 </template>
 <script>
@@ -153,8 +154,8 @@ export default {
 				password: '',
 				max_score: null,
 				max_players: null,
-				round_time_limit_mins: 0,
-				game_time_limit_mins: 0
+				round_time_limit_mins: null,
+				game_time_limit_mins: null,
 			},
 			select_data: {
 				max_score: {
@@ -219,18 +220,17 @@ export default {
 	methods: {
 		createGame() {
 			this.errors = {}
+			this.awaitingResponse = true
 
 			axios.post(route('games.create'), this.form_fields)
 				.then((response) => {
-					// localStorage.setItem('password', response.data.password)
+                    location.reload()
 				})
 				.catch((error) => {
-					this.errors = error.response.data.data
-					// error.response.data.data.errors.host && self.$router.go()
-					// self.errors.add(error.response.data.data.errors)
-				})
-				.then(() => {
-					// self.awaitingResponse = !self.awaitingResponse
+					// console.log(error.response)
+					this.errors = error.response
+						.data
+						.data
 				})
 		}
 	}

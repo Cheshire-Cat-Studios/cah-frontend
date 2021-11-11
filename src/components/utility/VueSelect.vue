@@ -14,7 +14,7 @@
         <select
             @change="change"
             :class="selectClass"
-            class="outline-none py-1 pl-5 pr-10 appearance-none"
+            class="outline-none py-1 pl-5 pr-10 appearance-none w-full"
         >
             <option
                 class="text-gray-600"
