@@ -55,7 +55,8 @@
                     v-show="!games.length"
                     class="col-span-8 text-center p-4"
                 >
-                    No games match your search criteria, please try amending your search filters or create a game using the button above!
+                    No games match your search criteria, please try amending your search filters or create a game using
+                    the button above!
                 </div>
 
                 <div
@@ -188,28 +189,21 @@ export default {
 				: this.joinGame()
 		},
 		joinGame() {
-			let self = this
+			// let self = this
 
-			axios.post('http://localhost:4000/games/join/' + this.selected_game.id,
+			axios.post(
+				route('games.join', this.selected_game.uuid),
 				{
-					user_uuid: localStorage.getItem('userId'),
-					user_secret: localStorage.getItem('secret'),
-
-					game: {
-						id: this.selected_game.id,
-						password: this.password,
-					},
-					user: {}
-				})
+					password: this.password,
+				}
+			)
 				.then(function () {
-					localStorage.setItem('gameId', self.selected_game.id)
-					self.$router.go('game')
+					location.reload()
 				})
 				.catch(function (error) {
-					error.data.data.user && self.$router.go()
-					// response.data.data.fields.password
-					error.data.data.game && (self.selected_game.player_count_select = self.selected_game.game.max_players)
-					error.data.data.password && self.errors.add(error.response.data.data.errors)
+					error.response?.status === 403
+						? location.reload()
+						: console.log(error.response.data) // flash error
 				})
 		}
 	}

@@ -8,7 +8,9 @@
                         :description="blackCard"
                     />
                     <div class="py-4">
-                        <h1 class="font-bold text-center mb-2">Scoreboard</h1>
+                        <h1 class="font-bold text-center mb-2">
+                            Scoreboard
+                        </h1>
                         <div class="h-32 overflow-y-scroll">
                             <div
                                 v-for="(player,index) in players"
@@ -23,7 +25,10 @@
                     </div>
                 </div>
                 <div id="cards-in-play">
-                    <div v-if="!isCzarPhase" class="flex flex-wrap">
+                    <div
+                        v-if="!isCzarPhase"
+                        class="flex flex-wrap"
+                    >
                         <!--                        <div-->
                         <!--                                v-for="(card,index) in allChosenCards"-->
                         <!--                                :key="index"-->
