@@ -2,16 +2,16 @@
     <div class="p-5">
         <div class="mb-4">
             <div class="flex">
-                <div class="px-2">
+                <div class="px-2 mr-20">
                     <card
                         :is-white="false"
-                        :description="blackCard"
+                        :description="black_card"
                     />
                     <div class="py-4">
                         <h1 class="font-bold text-center mb-2">
                             Scoreboard
                         </h1>
-                        <div class="h-32 overflow-y-scroll">
+                        <div class="h-32 overflow-y-auto">
                             <div
                                 v-for="(player,index) in players"
                                 :key="index"
@@ -24,61 +24,88 @@
                         </div>
                     </div>
                 </div>
-                <div id="cards-in-play">
+                <div
+                    id="cards-in-play"
+                    class="w-full"
+                >
                     <div
-                        v-if="!isCzarPhase"
-                        class="flex flex-wrap"
+                        v-if="is_czar_phase"
+                        class="flex flex-wrap flex-1"
                     >
-                        <!--                        <div-->
-                        <!--                                v-for="(card,index) in allChosenCards"-->
-                        <!--                                :key="index"-->
-                        <!--                        >-->
-                        <!--                            <div :test="card"-->
-                        <!--                                 class="animated fadeInUp rounded card mb-4 mr-1 w-40 h-64 bg-gray-700"></div>-->
-                        <!--                        </div>-->
-                    </div>
-                    <div>
+                        <div v-for="cards in cards_in_play">
+                            <card
+                                v-for="(card,key) in cards"
 
+                                :key="key"
+                                :is-white="true"
+                                :description="card"
+
+                                class="mb-6 mr-6 hover:-mt-4 negative-margins-hover cursor-pointer"
+                            />
+                        </div>
                     </div>
-                    <!--<card-->
-                    <!--v-for="(card,key) in hand"-->
-                    <!--:key="key"-->
-                    <!--:active="!(haveChosenCard || isCzar)"-->
-                    <!--:is-white="true"-->
-                    <!--:description="card"-->
-                    <!--/>-->
+                    <div
+                        v-else
+                    >
+                        <div class="flex flex-wrap flex-1">
+                            <div>
+                                <card
+                                    v-for="(card,key) in own_cards_in_play"
+
+                                    :key="key"
+                                    :is-white="true"
+                                    :description="card"
+
+                                    class="mb-6 mr-6 hover:-mt-4 negative-margins-hover cursor-pointer"
+                                />
+                            </div>
+
+                            <div
+                                v-for="i in cards_in_play_count"
+                                class="ml-6"
+                            >
+                                <div
+                                    v-for="x in chosen_limit"
+                                    class="rounded select-none card relative border border-gray-300 p-4 shadow-xl w-40 h-64 bg-gray-300 ml-2"
+                                >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
         <div id="hand" class="text-center">
             <vue-button
                 text="Confirm Selection"
-                :disabled="hand.filter(card => card.chosen).length < chosenLimit"
+                :disabled="chosen_cards.length < chosen_limit"
                 @click="choseCards"
             />
 
-            <div class="flex flex-wrap flex-row relative">
-                <!--            <span-->
-                <!--              v-if="(chosenLimit === chosenCards.length) || isCzar"-->
-                <!--              class="text-3xl font-bold top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2 z-10 absolute"-->
-                <!--            >-->
-                <!--              {{chosenLimit === chosenCards.length ? 'You have already selected your card(s)' : 'You are the card czar!'}}-->
-                <!--            </span>-->
+            <div
+                class="flex flex-wrap flex-row relative mt-20"
+            >
+                <span
+                    v-if="is_czar"
+                    class="text-3xl font-bold top-1/2 w-full transform -translate-y-1/2 z-10 absolute py-10 bg-black text-white w-full h-full flex justify-center items-center bg-opacity-75 shadow-xl"
+                >
+                    You are the card czar!
+                </span>
+
                 <card
                     v-for="(card,key) in hand"
 
-                    @click.native="selectCard(card)"
+                    @click="selectCard(key)"
 
-                    :selected="card.chosen"
-                    :active="cardsActive()"
+                    :selected="chosen_cards.includes(key)"
+                    :active="is_czar === false && !own_cards_in_play.length && ((chosen_cards.length < chosen_limit) || chosen_cards.includes(key))"
                     :key="key"
                     :is-white="true"
-                    :description="card.description"
+                    :description="card"
 
-                    :class="card.chosen && 'bg-blue-600 text-white border-blue-600 -mt-6'"
                     class="mb-6 mr-6 hover:-mt-4 negative-margins-hover cursor-pointer"
                 />
-                <!--              -->
             </div>
         </div>
     </div>
@@ -95,174 +122,83 @@ export default {
 		'vue-button': VueButton,
 		'card': Card,
 	},
-	data() {
-		return {
-			socket: io(import.meta.env.VITE_BACKEND_URL),
-			isCzar: false,
-			isCzarPhase: false,
-			chosenLimit: 1,
-			players: [
-				{
-					name: '0123456789',
-					chosen: true,
-					score: 10
-				},
-				{
-					name: 'two',
-					chosen: true,
-					score: 11
-				},
-				{
-					name: 'three',
-					chosen: true,
-					score: 10
-				},
-				{
-					name: 'four',
-					chosen: true,
-					score: 10
-				},
-				{
-					name: 'five',
-					chosen: true,
-					score: 10
-				},
-				{
-					name: 'six',
-					chosen: true,
-					score: 10
-				},
-				{
-					name: 'seven',
-					chosen: true,
-					score: 10
-				},
-				{
-					name: 'eight',
-					chosen: true,
-					score: 10
-				},
-				{
-					name: 'nine',
-					chosen: true,
-					score: 10
-				},
-				{
-					name: 'ten',
-					chosen: true,
-					score: 10
-				},
-			],
-			blackCard: 'I do not know with what weapons World War III will be fought, but World War IV will be fought with _.',
-			hand: [
-				{
-					id: 12,
-					description: 'Extremely tight trousers.',
-					chosen: false,
-				},
-				{
-					id: 12,
-					description: 'Extremely tight trousers.',
-					chosen: false,
-				},
-				{
-					id: 12,
-					description: 'Extremely tight trousers.',
-					chosen: false,
-				},
-				{
-					id: 12,
-					description: 'Extremely tight trousers.',
-					chosen: false,
-				},
-				{
-					id: 12,
-					description: 'Extremely tight trousers.',
-					chosen: false,
-				},
-				{
-					id: 12,
-					description: 'Extremely tight trousers.',
-					chosen: false,
-				},
-				{
-					id: 12,
-					description: 'Extremely tight trousers.',
-					chosen: false,
-				},
-				{
-					id: 12,
-					description: 'Extremely tight trousers.',
-					chosen: false,
-				},
-				{
-					id: 12,
-					description: 'Extremely tight trousers.',
-					chosen: false,
-				},
-				{
-					id: 12,
-					description: 'Extremely tight trousers.',
-					chosen: false,
+	data: (vm) => ({
+		socket: io(
+			import.meta.env.VITE_BACKEND_URL,
+			{
+				query: {
+					token: localStorage.getItem('token'),
 				}
-			],
-		}
-	},
+			}
+		),
+		is_czar: false,
+		is_czar_phase: false,
+		chosen_limit: 1,
+		players: [],
+		black_card: '',
+		hand: [],
+		chosen_cards: [],
+		cards_in_play: {},
+		own_cards_in_play: [],
+		cards_in_play_count: 0,
+	}),
 	computed: {
-		allChosenCards() {
-			return this.players.filter(player => player.chosen ?? false)
-		},
 		maxScore() {
 			return Math.max.apply(Math, this.players.map(player => player.score))
 		},
 	},
 	methods: {
-		cardsActive() {
-			return !(
-				this.isCzarPhase
-				|| this.isCzar
-				|| this.chosenLimit === this.hand.filter(hand => hand.chosen).length
-			)
-		},
-		selectCard(card) {
-			if (card.chosen) {
-				(card.chosen = false)
-			} else {
-				if (!this.cardsActive()) {
-					return
-				}
-				card.chosen = true
-			}
+		selectCard(key) {
+			this.chosen_cards.includes(key)
+				? this.chosen_cards = this.chosen_cards.filter(card_key => card_key !== key)
+				: (
+					this.chosen_cards.length < this.chosen_limit
+					&& this.chosen_cards.push(key)
+				)
 		},
 		choseCards() {
-			const chosen_cards = this.hand.filter(hand => hand.chosen)
+			console.log('EMITTING', this.chosen_cards)
 
-			console.log('EMITTING', chosen_cards)
+			this.socket.emit('cards-chosen', this.chosen_cards)
 
-
-			this.socket.emit('cards-chosen', {data: chosen_cards})
+            this.own_cards_in_play = this.hand.filter((description, index) => this.chosen_cards.includes(index))
+			this.hand = this.hand.filter((description, index) => !this.chosen_cards.includes(index))
+            this.chosen_cards = []
 		}
 	},
 	mounted() {
-		this.socket.on(
+		this.socket
+            .on(
 			'connect',
-			(() => {
+			() => {
 				console.log('connected')
-				this.socket.emit(
-					'verify',
-					{
-						user: {
-							id: localStorage.getItem('userId'),
-							secret: localStorage.getItem('secret'),
-						},
-						game: {
-							id: localStorage.getItem('gameId')
-						}
-					}
-				)
-			})
-				.bind(this)
+			}
 		)
+
+		this.socket
+            .on(
+			'game-state',
+			data => {
+				this.players = data.game.players
+				this.black_card = data.game.current_card
+				this.hand = data.hand
+				this.chosen_limit = (this.black_card.match(/_/g) || [1]).length
+                this.own_cards_in_play = data.game.own_cards_in_play || []
+                this.cards_in_play_count = data.game.cards_in_play_count
+                this.is_czar = data.game.is_current_czar
+
+                console.log(data)
+			}
+		)
+
+        this.socket
+            .on(
+            	'player-selected',
+                () => {
+            		console.log('hit')
+            		this.cards_in_play_count ++
+                }
+            )
 	}
 }
 </script>
