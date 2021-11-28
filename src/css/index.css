@@ -1,3 +1,7 @@
+@import "animations";
+@import "icons";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+

@@ -1,5 +1,39 @@
 <template>
-    <div class="p-5">
+    <div class="p-10">
+        <div
+            v-if="game_won.name"
+            class="absolute top-0 left-0 w-screen h-screen flex justify-center items-center bg-black bg-opacity-40 z-20"
+        >
+            <div
+                class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10"
+            >
+                <confetti-explosion
+                    :particleCount="200"
+                    :particleSize="30"
+                    :force="0.5"
+                    :stageHeight="1500"
+                />
+            </div>
+            <div
+                class="p-8 border-black shadow-2xl text-center bg-white z-20"
+            >
+                <span class="text-2xl font-bold">
+                    Score limit reached!
+                </span>
+                <br/>
+                <span class="text-4xl font-bold">
+                    {{ game_won.name }}
+                </span>
+                <br/>
+                <span>
+                    has won the game!
+                </span>
+                <br/>
+                <span>
+                    You will be returned to the dashboard in {{ game_won.i }} second{{ game_won.i === 1 ? 's' : '' }}
+                </span>
+            </div>
+        </div>
         <div class="mb-4">
             <div class="flex">
                 <div class="px-2 mr-20">
@@ -8,18 +42,39 @@
                         :description="black_card"
                     />
                     <div class="py-4">
-                        <h1 class="font-bold text-center mb-2">
+                        <h1
+                            @click="fireEvent('car-phase-started', 'test')"
+                            class="font-bold text-center mb-2"
+                        >
                             Scoreboard
                         </h1>
                         <div class="h-32 overflow-y-auto">
                             <div
                                 v-for="(player,index) in players"
                                 :key="index"
-                                :class="{'bg-green-500 animated flash': player.score === maxScore}"
-                                class="p-1 h-8"
+                                :class="player.score === maxScore && 'bg-green-500 animated flash'"
+                                class="p-1 min-h-8 flex justify-between items-center"
                             >
-                                <span class="float-left">{{ player.name }}:</span>
-                                <span class="float-right">{{ player.score }}</span>
+                                <span
+                                    class="flex justify-between items-center flex-1 text-sm"
+                                >
+                                    {{ player.name }}
+                                    <span>
+                                        <i
+                                            v-show="player.is_czar"
+                                            class="icon-crown mx-2"
+                                        />
+                                        <i
+                                            v-show="player.is_self"
+                                            class="icon-user mr-2"
+                                        />
+                                    </span>
+                                </span>
+                                <span
+                                    class="min-w-4 text-right"
+                                >
+                                    {{ player.score }}
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -32,15 +87,21 @@
                         v-if="is_czar_phase"
                         class="flex flex-wrap flex-1"
                     >
-                        <div v-for="cards in cards_in_play">
+                        <div
+                            v-for="(cards, uuid) in cards_in_play"
+                            @click="is_czar && (chosen_set = uuid)"
+                            :class="is_czar && 'cursor-pointer'"
+                            class="flex mr-10"
+                        >
                             <card
                                 v-for="(card,key) in cards"
 
                                 :key="key"
                                 :is-white="true"
                                 :description="card"
+                                :selected="uuid === chosen_set"
 
-                                class="mb-6 mr-6 hover:-mt-4 negative-margins-hover cursor-pointer"
+                                class="mb-6 mr-6 hover:-mt-4 negative-margins-hover animate__animated animate__fadeInUp"
                             />
                         </div>
                     </div>
@@ -48,7 +109,7 @@
                         v-else
                     >
                         <div class="flex flex-wrap flex-1">
-                            <div>
+                            <div class="flex mb-10 mr-10">
                                 <card
                                     v-for="(card,key) in own_cards_in_play"
 
@@ -56,17 +117,17 @@
                                     :is-white="true"
                                     :description="card"
 
-                                    class="mb-6 mr-6 hover:-mt-4 negative-margins-hover cursor-pointer"
+                                    class="mb-6 mr-6 hover:-mt-4 negative-margins-hover cursor-pointer animate__animated animate__fadeInUp"
                                 />
                             </div>
 
                             <div
                                 v-for="i in cards_in_play_count"
-                                class="ml-6"
+                                class="flex mb-10 mr-10"
                             >
                                 <div
                                     v-for="x in chosen_limit"
-                                    class="rounded select-none card relative border border-gray-300 p-4 shadow-xl w-40 h-64 bg-gray-300 ml-2"
+                                    class="rounded select-none card relative border border-gray-300 p-4 shadow-xl w-40 h-64 bg-gray-300 mr-6 animate__animated animate__fadeInUp"
                                 >
                                 </div>
                             </div>
@@ -79,16 +140,15 @@
         <div id="hand" class="text-center">
             <vue-button
                 text="Confirm Selection"
-                :disabled="chosen_cards.length < chosen_limit"
-                @click="choseCards"
+                :disabled="!canConfirm()"
+                @click="confirmSelection"
             />
-
             <div
                 class="flex flex-wrap flex-row relative mt-20"
             >
                 <span
                     v-if="is_czar"
-                    class="text-3xl font-bold top-1/2 w-full transform -translate-y-1/2 z-10 absolute py-10 bg-black text-white w-full h-full flex justify-center items-center bg-opacity-75 shadow-xl"
+                    class="animate__animated animate__fadeIn text-3xl font-bold top-1/2 w-full transform -translate-y-1/2 z-10 absolute py-10 bg-black text-white w-full h-full flex justify-center items-center bg-opacity-75 shadow-xl"
                 >
                     You are the card czar!
                 </span>
@@ -104,8 +164,46 @@
                     :is-white="true"
                     :description="card"
 
-                    class="mb-6 mr-6 hover:-mt-4 negative-margins-hover cursor-pointer"
+                    class="mb-6 mr-6 hover:-mt-4 negative-margins-hover cursor-pointer animate__animated animate__fadeInUp"
                 />
+            </div>
+        </div>
+        <div
+            v-show="event.started_at"
+            class="pt-1/10 absolute w-screen h-screen top-0 left-0 flex items-start justify-center"
+        >
+            <div
+                v-show="event.started_at"
+
+                ref="eventCard"
+                class="p-5 text-xl bg-black text-center text-white roll-in-left shadow-2xl overflow-hidden "
+            >
+                <div v-show="event.type === 'car-phase-started'">
+                    <span>
+                        All players have chosen their cards.
+                    </span>
+                    <br/>
+                    <span class="text-4xl font-bold">
+                        {{ event.user_name }}
+                    </span>
+                    <br/>
+                    <span>
+                        will choose the winner
+                    </span>
+                </div>
+                <div v-show="event.type === 'round-end'">
+                    <span>
+                        The Czar has chosen
+                    </span>
+                    <br/>
+                    <span class="text-4xl font-bold">
+                         {{ event.user_name }}
+                    </span>
+                    <br/>
+                    <span>
+                        has won the round!
+                    </span>
+                </div>
             </div>
         </div>
     </div>
@@ -113,6 +211,7 @@
 <script>
 import VueButton from '../utility/VueButton.vue'
 import Card from '../utility/Card.vue'
+import ConfettiExplosion from 'vue-confetti-explosion'
 
 import io from 'socket.io-client'
 
@@ -121,8 +220,18 @@ export default {
 	components: {
 		'vue-button': VueButton,
 		'card': Card,
+		ConfettiExplosion
 	},
-	data: (vm) => ({
+	data: () => ({
+		event_timelimit: {
+			total: 4000,
+			exit: 3000,
+		},
+		event: {
+			started_at: null,
+			type: null,
+			user_name: null,
+		},
 		socket: io(
 			import.meta.env.VITE_BACKEND_URL,
 			{
@@ -141,6 +250,11 @@ export default {
 		cards_in_play: {},
 		own_cards_in_play: [],
 		cards_in_play_count: 0,
+		chosen_set: null,
+		game_won: {
+			name: null,
+			i: null,
+		}
 	}),
 	computed: {
 		maxScore() {
@@ -148,6 +262,18 @@ export default {
 		},
 	},
 	methods: {
+		canConfirm() {
+			if (this.is_czar !== this.is_czar_phase) {
+				return false
+			}
+
+			if (this.is_czar) {
+				return !!this.chosen_set
+			}
+
+			return !this.own_cards_in_play.length
+				&& this.chosen_cards.length === this.chosen_limit
+		},
 		selectCard(key) {
 			this.chosen_cards.includes(key)
 				? this.chosen_cards = this.chosen_cards.filter(card_key => card_key !== key)
@@ -156,49 +282,169 @@ export default {
 					&& this.chosen_cards.push(key)
 				)
 		},
-		choseCards() {
-			console.log('EMITTING', this.chosen_cards)
+		confirmSelection() {
+			this.is_czar
+				? this.chooseSet()
+				: this.chooseCards()
+		},
+		chooseSet() {
+			this.socket.emit('czar-chosen', this.chosen_set)
 
+			this.chosen_set = null
+			this.is_czar = false
+		},
+		chooseCards() {
 			this.socket.emit('cards-chosen', this.chosen_cards)
 
-            this.own_cards_in_play = this.hand.filter((description, index) => this.chosen_cards.includes(index))
+			this.own_cards_in_play = this.hand.filter((description, index) => this.chosen_cards.includes(index))
 			this.hand = this.hand.filter((description, index) => !this.chosen_cards.includes(index))
-            this.chosen_cards = []
+			this.chosen_cards = []
+		},
+		socketListeners() {
+			this.socket
+				.on(
+					'connect',
+					() => {
+						console.log('connected')
+					}
+				)
+
+			this.socket
+				.on(
+					'game-state',
+					data => {
+						console.log('hit')
+						this.players = data.game.players
+						this.black_card = data.game.current_card
+						this.hand = data.hand
+						this.chosen_limit = (this.black_card.match(/_/g) || [1]).length
+						this.own_cards_in_play = data.game.own_cards_in_play || []
+						this.cards_in_play_count = data.game.cards_in_play_count
+						this.cards_in_play = data.game.cards_in_play
+						this.is_czar = data.game.is_current_czar
+						this.is_czar_phase = data.game.is_czar_phase
+
+						console.log(this.is_czar)
+
+						console.log(data)
+					}
+				)
+
+			this.socket
+				.on(
+					'player-selected',
+					() => {
+						this.cards_in_play_count++
+					}
+				)
+
+			this.socket
+				.on(
+					'czar-phase-start',
+					({cards_in_play, czar_name}) => {
+						this.is_czar_phase = true
+						this.cards_in_play = cards_in_play
+						this.cards_in_play_count = 0
+
+						this.fireEvent('car-phase-started', czar_name)
+					}
+				)
+
+			this.socket
+				.on(
+					'player-joined',
+					name => {
+						this.players
+							.push({
+								name: name,
+								score: 0,
+							})
+					}
+				)
+
+			this.socket
+				.on(
+					'round-end',
+					({scoreboard, winner, hand, is_czar, card}) => {
+
+						console.log(scoreboard)
+						this.players = scoreboard
+						this.cards_in_play = {}
+						this.is_czar = is_czar
+						this.hand = hand
+						// this
+						this.is_czar_phase = false
+						this.own_cards_in_play = []
+						this.black_card = card
+						//TODO: computed prop for below?
+						this.chosen_limit = (this.black_card.match(/_/g) || [1]).length
+
+						this.fireEvent('round-end', winner.name)
+					}
+				)
+
+			this.socket
+				.on(
+					'game-won',
+					(data) => {
+						this.game_won.name = data.name
+						this.game_won.i = 10
+
+						window.setInterval(
+							() => {
+								this.game_won.i
+								&& (this.game_won.i--)
+
+								!this.game_won.i
+								&& location.reload()
+							},
+							1000
+						)
+                    }
+				)
+		},
+		fireEvent(type, user_name) {
+			if (!this.event.started_at) {
+				this.event = {
+					started_at: new Date().getTime(),
+					type,
+					user_name,
+				}
+
+				setTimeout(
+					() => {
+						this.$refs.eventCard
+							?.classList
+							?.add('roll-out-right')
+
+						setTimeout(
+							() => {
+								this.resetEvent()
+							},
+							this.event_timelimit.total - this.event_timelimit.exit
+						)
+					},
+					this.event_timelimit.exit
+				)
+
+			} else {
+
+			}
+		},
+		resetEvent() {
+			this.$refs.eventCard
+				?.classList
+				?.remove('roll-out-right')
+
+			this.event = {
+				started_at: null,
+				type: null,
+				user_name: null,
+			}
 		}
 	},
 	mounted() {
-		this.socket
-            .on(
-			'connect',
-			() => {
-				console.log('connected')
-			}
-		)
-
-		this.socket
-            .on(
-			'game-state',
-			data => {
-				this.players = data.game.players
-				this.black_card = data.game.current_card
-				this.hand = data.hand
-				this.chosen_limit = (this.black_card.match(/_/g) || [1]).length
-                this.own_cards_in_play = data.game.own_cards_in_play || []
-                this.cards_in_play_count = data.game.cards_in_play_count
-                this.is_czar = data.game.is_current_czar
-
-                console.log(data)
-			}
-		)
-
-        this.socket
-            .on(
-            	'player-selected',
-                () => {
-            		console.log('hit')
-            		this.cards_in_play_count ++
-                }
-            )
+		this.socketListeners()
 	}
 }
 </script>

@@ -3,7 +3,7 @@
         @click.stop="$emit('button-click')"
         v-html="text"
         :disabled="disabled"
-        :class="disabled && 'opacity-50'"
+        :class="disabled ? 'opacity-50' : 'hover:border-black hover:text-black hover:bg-white'"
         class="
             py-1
             px-3
@@ -12,9 +12,6 @@
             rounded
             shadow-xl
             border
-            hover:border-black
-            hover:text-black
-            hover:bg-white
         "
     >
     </button>

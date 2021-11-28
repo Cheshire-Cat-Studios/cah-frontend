@@ -5,8 +5,15 @@ module.exports = {
 	darkMode: false, // or 'media' or 'class'
 	theme: {
 		extend: {
+			minWidth: {
+				'4': '1.5rem',
+			},
+			minHeight: {
+				'8': '2rem',
+			},
 			spacing: {
 				'500': '500px',
+				'1/10': '10%',
 			},
 			inset: {
 				'1/2': '50%',

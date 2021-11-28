@@ -7,18 +7,17 @@
                 Cards Against Humanity&trade;
             </span>
         </div>
-
-        <vue-button
-            @button-click="show_game_create_modal = true"
-            text="Create a game"
-        />
-
-        <div class="container mx-auto">
-            <p class="pt-10 pb-20">
+        <div class="z-10 px-20">
+            <p class="mt-10 mb-20">
                 Welcome! Now you've successfully registered a player name you can start playing!
                 Please choose a game in progress from the list on the left hand side or use the
                 menu on the right hand side to set up your own game.
             </p>
+            <vue-button
+                @button-click="show_game_create_modal = true"
+                text="Create a game"
+                class="mb-5"
+            />
             <div class="flex">
                 <game-search/>
             </div>

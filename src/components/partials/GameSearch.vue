@@ -96,19 +96,32 @@
         <modal
             @close="show_modal= false"
             :showing="show_modal"
+            class="text-center"
         >
-            <a>ID : {{ selected_game }}</a>
-            <p>
+            <span class="text-4xl font-bold mb-4">
+                {{ selected_game?.name }}
+            </span>
+
+            <p class="text-xl mb-4">
                 This game is private and requires a password
             </p>
 
+            <input
+                v-model="password"
+                class="py-1 text-center outline-none placeholder-gray-400 text-gray-600 w-full mb-4"
+                type="password"
+                placeholder="Insert password here"
+            />
+
             <error-messages
-                :show="false"
-                :messages="['afeaf']"
+                :show="!!errors?.password"
+                :messages="errors?.password ? [errors?.password] : []"
             />
 
             <vue-button
                 text="Join Game"
+                class="mt-5"
+                :disabled="!password"
                 v-on:click="joinGame()"
             />
         </modal>
@@ -134,6 +147,8 @@ export default {
 	},
 	data: function () {
 		return {
+			errors: {},
+			password_errors: [],
 			show_modal: false,
 			selected_game: null,
 			games: [],
@@ -163,33 +178,44 @@ export default {
 	},
 	watch: {
 		filters: {
-			handler(filters) {
-				this.filterGames(filters)
+			handler() {
+				this.filterGames()
 			},
 			deep: true
 		}
 	},
 	mounted() {
 		this.filterGames()
+
+		this.heartbeat()
 	},
 	methods: {
-		filterGames(filters) {
-			let self = this
-
-			axios.get(route('games.index'), {params: filters})
-				.then(function (response) {
-					self.games = response.data.data.games
+		heartbeat() {
+			setTimeout(
+				() => {
+					this.filterGames()
+					this.heartbeat()
+				},
+				5000
+			)
+		},
+		filterGames() {
+			axios.get(route('games.index'), {params: this.filters})
+				.then(response => {
+					this.games = response.data.data.games
 				})
 		},
 		selectGame(game) {
-			console.log(123)
+			this.password = null
 			this.selected_game = game
+
 			game.private
 				? (this.show_modal = true)
 				: this.joinGame()
 		},
 		joinGame() {
 			// let self = this
+			this.errors = []
 
 			axios.post(
 				route('games.join', this.selected_game.uuid),
@@ -197,10 +223,12 @@ export default {
 					password: this.password,
 				}
 			)
-				.then(function () {
+				.then(() => {
 					location.reload()
 				})
-				.catch(function (error) {
+				.catch(error => {
+					this.errors = error.response.data.data
+
 					error.response?.status === 403
 						? location.reload()
 						: console.log(error.response.data) // flash error

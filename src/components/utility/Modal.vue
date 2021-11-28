@@ -3,13 +3,13 @@
         <div
             v-show="showing"
             :class="showing && 'overflow-hidden'"
-            class="fixed flex justify-center items-center w-screen h-screen bg-black bg-opacity-50 top-0 z-20"
+            class="fixed flex justify-center items-center w-screen h-screen bg-black bg-opacity-50 top-0 left-0 z-20"
             @click.self="close"
         >
-            <div class="p-4 bg-white rounded-md">
+            <div class="p-8 bg-white rounded-md relative">
                 <a
                     aria-label="close"
-                    class="cursor-pointer generic-modal-close"
+                    class="absolute top-2 right-2"
                     @click.prevent="close"
                 >
                     ×

@@ -1,0 +1,4 @@
+.roll-out-right {
+    -webkit-animation: roll-out-right 1s ease-in both;
+    animation: roll-out-right 1s ease-in both;
+}
