@@ -5,7 +5,7 @@
             'pointer-events-none opacity-50':!active,
             'bg-blue-600 text-white border-blue-600 -mt-6': selected,
         }"
-        class="rounded select-none card relative border border-black p-4 shadow-xl w-40 h-64"
+        class="rounded select-none card relative border border-black p-4 shadow-xl w-40 h-64 flex flex-col justify-between"
     >
         <p
             :class="!isWhite && 'text-white'"
@@ -13,6 +13,12 @@
             v-html="cleanDescription"
         >
         </p>
+        <span
+            v-show="selectedIndex!== null"
+            class="text-4xl font-bold text-white mb-5"
+        >
+            {{ selectedIndex + 1 }}
+        </span>
         <div class="w-full absolute left-0 text-center bottom-0 mb-4">
             <card-logo
                 class="mr-1 inline h-4 w-4"
@@ -58,7 +64,15 @@ export default {
 			required: false,
 			type: Boolean,
 			default: false,
-		}
+		},
+        selectedIndex: {
+		    required: false,
+            type: [
+            	Number,
+                null,
+            ],
+            default: null,
+        },
 	},
 	computed: {
 		cleanDescription() {

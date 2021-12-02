@@ -41,7 +41,7 @@
                         :is-white="false"
                         :description="black_card"
                     />
-                    <div class="py-4">
+                    <div class="py-4 flex flex-col">
                         <h1
                             @click="fireEvent('car-phase-started', 'test')"
                             class="font-bold text-center mb-2"
@@ -77,6 +77,12 @@
                                 </span>
                             </div>
                         </div>
+                        <button
+                            @click="show_leave_game_modal = true"
+                            class="border border-red-500 text-red-500 font-bold px-4 px-2 mx-auto"
+                        >
+                           Leave
+                        </button>
                     </div>
                 </div>
                 <div
@@ -147,10 +153,10 @@
                 class="flex flex-wrap flex-row relative mt-20"
             >
                 <span
-                    v-if="is_czar"
+                    v-if="is_czar || !game_started"
                     class="animate__animated animate__fadeIn text-3xl font-bold top-1/2 w-full transform -translate-y-1/2 z-10 absolute py-10 bg-black text-white w-full h-full flex justify-center items-center bg-opacity-75 shadow-xl"
                 >
-                    You are the card czar!
+                    {{ !game_started ? 'The game hasn\'t started yet!' : 'You are the card czar!' }}
                 </span>
 
                 <card
@@ -163,6 +169,7 @@
                     :key="key"
                     :is-white="true"
                     :description="card"
+                    :selected-index="chosen_cards.indexOf(key)"
 
                     class="mb-6 mr-6 hover:-mt-4 negative-margins-hover cursor-pointer animate__animated animate__fadeInUp"
                 />
@@ -206,11 +213,40 @@
                 </div>
             </div>
         </div>
+        <div
+            v-if="!game_started"
+            class="w-screen h-screen absolute top-0 left-0 flex items-center justify-center"
+        >
+            <span
+                v-if="is_host"
+                @click="socket.emit('start-game')"
+                class="px-6 py-4 text-4xl font-bold rounded-md cursor-pointer bg-green-400 z-40 hover:opacity-75"
+            >
+                Start Game
+            </span>
+        </div>
+        <modal
+            :showing="show_leave_game_modal"
+            @close="show_leave_game_modal = false"
+        >
+            <div class="flex flex-col">
+                <p class="font-bold text-xl mb-4">
+                    Are you sure you wish to do this? This action cannot be undone!
+                </p>
+                <button
+                    @click="leaveGame()"
+                    class="border border-red-500 text-red-500 font-bold px-4 px-2 mx-auto"
+                >
+                    Leave
+                </button>
+            </div>
+        </modal>
     </div>
 </template>
 <script>
 import VueButton from '../utility/VueButton.vue'
 import Card from '../utility/Card.vue'
+import Modal from '../utility/Modal.vue'
 import ConfettiExplosion from 'vue-confetti-explosion'
 
 import io from 'socket.io-client'
@@ -220,7 +256,8 @@ export default {
 	components: {
 		'vue-button': VueButton,
 		'card': Card,
-		ConfettiExplosion
+		ConfettiExplosion,
+        Modal,
 	},
 	data: () => ({
 		event_timelimit: {
@@ -240,6 +277,7 @@ export default {
 				}
 			}
 		),
+		is_host: false,
 		is_czar: false,
 		is_czar_phase: false,
 		chosen_limit: 1,
@@ -254,7 +292,9 @@ export default {
 		game_won: {
 			name: null,
 			i: null,
-		}
+		},
+        show_leave_game_modal: false,
+		game_started: false,
 	}),
 	computed: {
 		maxScore() {
@@ -300,7 +340,13 @@ export default {
 			this.hand = this.hand.filter((description, index) => !this.chosen_cards.includes(index))
 			this.chosen_cards = []
 		},
+		leaveGame(){
+            this.socket.emit('leave')
+
+            location.reload()
+        },
 		socketListeners() {
+			//TODO: move this into a mixin or a module? lots of logic here, its not necessarily the components responsibility to handle socket events (mixin might be better as it has a more compatible concept of this)
 			this.socket
 				.on(
 					'connect',
@@ -313,7 +359,6 @@ export default {
 				.on(
 					'game-state',
 					data => {
-						console.log('hit')
 						this.players = data.game.players
 						this.black_card = data.game.current_card
 						this.hand = data.hand
@@ -323,12 +368,17 @@ export default {
 						this.cards_in_play = data.game.cards_in_play
 						this.is_czar = data.game.is_current_czar
 						this.is_czar_phase = data.game.is_czar_phase
-
-						console.log(this.is_czar)
-
-						console.log(data)
+						this.game_started = data.game.is_started
+						this.is_host = data.game.is_host
 					}
 				)
+
+			this.socket.on(
+				'game-started',
+				() => {
+					this.game_started = true
+				}
+			)
 
 			this.socket
 				.on(
@@ -400,7 +450,33 @@ export default {
 							},
 							1000
 						)
-                    }
+					}
+				)
+
+			this.socket
+				.on(
+					'player-left',
+					data => {
+						console.log(data)
+
+                        this.chosen_cards = []
+						this.players = data.scoreboard
+						this.cards_in_play = data.cards_in_play || {}
+						this.cards_in_play_count = data.cards_in_play_count || 0
+						this.is_czar = data.is_czar
+						this.hand = data.hand
+						this.is_czar_phase = data.is_czar_phase
+						this.own_cards_in_play = data.own_cards_in_play || []
+
+						// this.black_card = card
+						//TODO: computed prop for below?
+
+                        // console.log(
+                        // 	data.player_who_left,
+                        // 	data.left_player_was_czar
+                        // )
+
+					}
 				)
 		},
 		fireEvent(type, user_name) {

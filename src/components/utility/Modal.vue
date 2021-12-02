@@ -7,30 +7,17 @@
             @click.self="close"
         >
             <div class="p-8 bg-white rounded-md relative">
-                <a
-                    aria-label="close"
-                    class="absolute top-2 right-2"
+                <span
+                    class="absolute top-2 right-2 cursor-pointer"
                     @click.prevent="close"
                 >
                     ×
-                </a>
+                </span>
                 <slot/>
             </div>
         </div>
     </Transition>
 </template>
-
-<style scoped>
-.fade-enter-active,
-.fade-leave-active {
-    transition: all 0.4s;
-}
-
-.fade-enter,
-.fade-leave-to {
-    opacity: 0;
-}
-</style>
 
 <script>
 export default {
@@ -43,7 +30,6 @@ export default {
 	},
 	methods: {
 		close() {
-			console.log('CLOSE')
 			this.$emit('close')
 		}
 	}
