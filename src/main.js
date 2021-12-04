@@ -25,6 +25,7 @@ axios.defaults.headers.common['Authorization'] = bearer_token;
 	token
 		? await axios.get(route('users.verify'))
 			.then(response => {
+				localStorage.setItem('token', response.data.data.token)
 				component = response.data.data.in_game
 					? Game
 					: Dashboard
