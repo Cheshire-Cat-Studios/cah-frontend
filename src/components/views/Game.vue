@@ -52,7 +52,7 @@
                             <div
                                 v-for="(player,index) in players"
                                 :key="index"
-                                :class="player.score === maxScore && 'bg-green-500 animated flash'"
+                                :class="player.score && player.score === maxScore && 'bg-green-500 animated flash'"
                                 class="p-1 min-h-8 flex justify-between items-center"
                             >
                                 <span
@@ -375,7 +375,8 @@ export default {
 
 			this.socket.on(
 				'game-started',
-				() => {
+				({is_czar}) => {
+					this.is_czar = is_czar
 					this.game_started = true
 				}
 			)
