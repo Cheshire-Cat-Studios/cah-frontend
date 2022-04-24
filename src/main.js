@@ -43,7 +43,7 @@ axios.defaults.headers.common['Authorization'] = bearer_token;
 	//TODO: spinners library doesnt work with vue 3, find or build an alternative
 	createApp(component)
 		// .use(VueSpinners)
-		.provide('testing', 'value')
+		// .provide('testing', 'value')
 		.mount('#app')
 
 })()

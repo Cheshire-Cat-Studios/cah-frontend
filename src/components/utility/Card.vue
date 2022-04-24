@@ -14,7 +14,7 @@
         >
         </p>
         <span
-            v-show="selectedIndex!== null"
+            v-show="selectedIndex && selectedIndex >= 0"
             class="text-4xl font-bold text-white mb-5"
         >
             {{ selectedIndex + 1 }}

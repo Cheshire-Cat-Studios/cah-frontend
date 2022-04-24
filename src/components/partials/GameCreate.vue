@@ -150,12 +150,12 @@ export default {
 			errors: {},
 			awaitingResponse: false,
 			form_fields: {
-				name: '',
+				name: 'testing game',
 				password: '',
-				max_score: null,
-				max_players: null,
-				round_time_limit_mins: null,
-				game_time_limit_mins: null,
+				max_score: 10,
+				max_players: 3,
+				round_time_limit_mins: 10,
+				game_time_limit_mins: 50,
 			},
 			select_data: {
 				max_score: {
