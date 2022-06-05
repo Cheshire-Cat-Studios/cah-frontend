@@ -1,3 +1,4 @@
+//TODO: build an object module for this with event-string mapped to closures below(how would this work?!?)
 export default {
 	methods: {
 		socketListeners(){
@@ -112,16 +113,18 @@ export default {
 				.on(
 					'player-left',
 					data => {
-						console.log(data)
+					// ({scoreboard, cards_in_play, hand, is_czar_phase, is_host, player_who_left_name}) => {
 
-						this.chosen_cards = []
-						this.players = data.scoreboard
-						this.cards_in_play = data.cards_in_play || {}
-						this.cards_in_play_count = data.cards_in_play_count || 0
-						this.is_czar = data.is_czar
-						this.hand = data.hand
-						this.is_czar_phase = data.is_czar_phase
-						this.own_cards_in_play = data.own_cards_in_play || []
+
+						console.log(
+							data
+							// scoreboard,
+							// cards_in_play,
+							// hand,
+							// is_czar_phase,
+							// is_host,
+							// player_who_left_name
+						)
 
 						// this.black_card = card
 						//TODO: computed prop for below?
