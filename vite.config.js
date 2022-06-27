@@ -9,16 +9,10 @@ export default ({mode}) => {
 	return defineConfig({
 		plugins: [vue()],
 		server: {
-			proxy: {
-				// Proxying websockets or socket.io
-				'/socket.io': {
-					target: `ws://${process.env.HTTP_PROXY}`,
-					ws: true
-				}
-			},
-			host: true,
-			secure: false,
-			port: env.VITE_PORT,
-		},
+			hmr: {
+				clientPort: 80,
+				port: 90 // vite@2.5.2 and newer: clientPort
+			}
+		}
 	})
 }
