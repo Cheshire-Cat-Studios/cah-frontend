@@ -9,6 +9,13 @@ export default ({mode}) => {
 	return defineConfig({
 		plugins: [vue()],
 		server: {
+			proxy: {
+				// Proxying websockets or socket.io
+				'/socket.io': {
+					target: `ws://${process.env.HTTP_PROXY}`,
+					ws: true
+				}
+			},
 			host: true,
 			port: env.VITE_PORT,
 		},
