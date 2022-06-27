@@ -17,6 +17,7 @@ export default ({mode}) => {
 				}
 			},
 			host: true,
+			secure: false,
 			port: env.VITE_PORT,
 		},
 	})
