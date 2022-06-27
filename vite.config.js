@@ -11,7 +11,7 @@ export default ({mode}) => {
 		server: {
 			hmr: {
 				clientPort: 80,
-				port: 90 // vite@2.5.2 and newer: clientPort
+				port: 80 // vite@2.5.2 and newer: clientPort
 			}
 		}
 	})
