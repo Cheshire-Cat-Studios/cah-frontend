@@ -19,22 +19,34 @@ let component = null,
 token
 && (bearer_token = `Bearer ${token}`)
 
-axios.defaults.headers.common['Authorization'] = bearer_token;
+axios.defaults
+	.headers
+	.common
+	['Authorization'] = bearer_token;
 
+//async method def/call to await the axios call (should it be needed)
+//TODO: consider tidying all this up/abstracting
 (async () => {
 	token
 		? await axios.get(route('users.verify'))
 			.then(response => {
-				localStorage.setItem('token', response.data.data.token)
+				localStorage.setItem(
+					'token',
+					response.data.data.token
+				)
+
 				component = response.data.data.in_game
 					? Game
 					: Dashboard
 			})
 			.catch(error => {
-				axios.defaults.headers.common['Authorization'] = undefined
+				axios.defaults
+					.headers
+					.common
+					['Authorization'] = undefined
+
 				localStorage.removeItem('token')
 
-				// console.log(error)
 				component = Register
 			})
 		: (component = Register)

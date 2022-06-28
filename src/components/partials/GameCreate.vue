@@ -152,7 +152,7 @@ export default {
 			form_fields: {
 				name: 'testing game',
 				password: '',
-				max_score: 10,
+				max_score: 1,
 				max_players: 3,
 				round_time_limit_mins: 10,
 				game_time_limit_mins: 50,
@@ -160,6 +160,10 @@ export default {
 			select_data: {
 				max_score: {
 					0: 'Max score',
+					1: 1,
+					2: 2,
+					3: 3,
+					4: 4,
 					5: 5,
 					10: 10,
 					15: 15,
