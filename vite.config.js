@@ -15,6 +15,9 @@ export default ({mode}) => {
 		port: env.VITE_HTTP_PROXY // vite@2.5.2 and newer: clientPort
 	})
 
+	env.VITE_HOST
+	&& (server.host = env.VITE_HOST)
+
 	return defineConfig({
 		plugins: [vue()],
 		server
