@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: ./.docker/node.dockerfile
     ports:
-      - "127.0.0.1:${VITE_PORT}:${VITE_PORT}"
+      - "${VITE_HOST}:${VITE_PORT}:${VITE_PORT}"
     volumes:
       - .:/usr/src/app/
       - /usr/src/app/node_modules/
