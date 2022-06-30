@@ -9,3 +9,20 @@ services:
     volumes:
       - .:/usr/src/app/
       - /usr/src/app/node_modules/
+  nginx:
+    build:
+      context: .
+      dockerfile: ./.docker/nginx.dockerfile
+    ports:
+      - 3005:80
+    depends_on:
+      - build
+    volumes:
+      - ./dist:/var/www/html/public
+  build:
+    build:
+      context: .
+      dockerfile: ./.docker/build.dockerfile
+    volumes:
+      - .:/usr/src/app/
+      - /usr/src/app/node_modules/
