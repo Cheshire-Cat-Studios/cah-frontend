@@ -14,7 +14,7 @@ services:
       context: .
       dockerfile: ./.docker/nginx.dockerfile
     ports:
-      - 3005:80
+      - "${VITE_HOST}:${VITE_PORT}:${VITE_PORT}"
     depends_on:
       - build
     volumes:
