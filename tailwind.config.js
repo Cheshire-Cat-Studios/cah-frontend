@@ -31,6 +31,9 @@ module.exports = {
 					'hover',
 					'responsive',
 				],
+				transitionProperty: {
+					'margin': 'margin',
+				}
 			},
 		},
 		plugins: [],

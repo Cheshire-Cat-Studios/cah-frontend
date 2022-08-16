@@ -8,10 +8,4 @@ COPY ./package.json /usr/src/app/
 
 RUN npm install
 
-
 CMD ["npm", "run", "build"]
-
-#CMD ["npm", "run", "dev"]
-
-
-RUN #while true; do sleep 100 done;

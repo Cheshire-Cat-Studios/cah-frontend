@@ -79,7 +79,7 @@
                         </div>
                         <button
                             @click="show_leave_game_modal = true"
-                            class="border border-red-500 text-red-500 font-bold px-4 px-2 mx-auto"
+                            class="border border-red-500 text-red-500 font-bold px-4 px-2 mx-auto z-40"
                         >
                            Leave
                         </button>
@@ -115,7 +115,10 @@
                         v-else
                     >
                         <div class="flex flex-wrap flex-1">
-                            <div class="flex mb-10 mr-10">
+                            <div
+                                v-if="own_cards_in_play?.length"
+                                class="flex mb-10 mr-10"
+                            >
                                 <card
                                     v-for="(card,key) in own_cards_in_play"
 
@@ -171,7 +174,7 @@
                     :description="card"
                     :selected-index="chosen_cards.indexOf(key)"
 
-                    class="mb-6 mr-6 hover:-mt-4 negative-margins-hover cursor-pointer animate__animated animate__fadeInUp"
+                    class="transition-margin duration-700 mb-6 mr-6 hover:-mt-4 negative-margins-hover cursor-pointer animate__animated animate__fadeInUp"
                 />
             </div>
         </div>
@@ -387,6 +390,8 @@ export default {
 		}
 	},
 	mounted() {
+		console.log('hit')
+        console.log(import.meta.env.VITE_BACKEND_URL)
 		this.socketListeners()
 	}
 }

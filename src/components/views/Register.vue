@@ -20,7 +20,7 @@
 
         <vue-button
             @button-click="submit"
-            v-show="name.length > 2"
+            v-show="name.length > 4"
             class="animate__animated animate__fadeIn"
             text="Register user"
         >
@@ -51,12 +51,13 @@ export default {
 				}
 			)
 				.then(response => {
+					response.data.data.token
 					localStorage.setItem('token', response.data.data.token)
 
 					location.reload()
 				})
 				.catch(error => {
-					console.log(error.response.data.errors)
+					// console.log(error.response?.data?.errors)
 				})
 		}
 	},

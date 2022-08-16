@@ -92,7 +92,7 @@ export default {
 			this.socket
 				.on(
 					'game-won',
-					(data) => {
+					data => {
 						this.game_won.name = data.name
 						this.game_won.i = 10
 
@@ -112,28 +112,16 @@ export default {
 			this.socket
 				.on(
 					'player-left',
+					// data => {
 					data => {
-					// ({scoreboard, cards_in_play, hand, is_czar_phase, is_host, player_who_left_name}) => {
 
+						this.cards_in_play= data.cards_in_play
+						this.hand = data.hand
+						this.is_czar = data.is_czar
+						this.is_czar_phase = data.is_czar_phase
+						this.players = data.scoreboard
 
-						console.log(
-							data
-							// scoreboard,
-							// cards_in_play,
-							// hand,
-							// is_czar_phase,
-							// is_host,
-							// player_who_left_name
-						)
-
-						// this.black_card = card
-						//TODO: computed prop for below?
-
-						// console.log(
-						// 	data.player_who_left,
-						// 	data.left_player_was_czar
-						// )
-
+						console.log(data)
 					}
 				)
 		}
